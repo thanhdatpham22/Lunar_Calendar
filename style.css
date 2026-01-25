@@ -1,0 +1,65 @@
+/* ===== CUSTOM STYLES ===== */
+* {
+    font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #10b981;
+    border-radius: 4px;
+}
+
+/* Calendar day hover effect */
+.calendar-day {
+    transition: all 0.2s ease;
+}
+
+.calendar-day:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Badge animation */
+.holiday-badge {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+/* Button hover */
+.nav-btn {
+    transition: all 0.2s ease;
+}
+
+.nav-btn:hover {
+    transform: scale(1.1);
+}
+
+/* Today button */
+.today-btn {
+    transition: all 0.3s ease;
+}
+
+.today-btn:hover {
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+}
+
+/* Select styling */
+select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1.5em;
+}
