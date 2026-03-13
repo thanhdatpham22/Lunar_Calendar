@@ -40,7 +40,7 @@ const LUNAR_HOLIDAYS = {
 // Các ngày trong tuần
 const WEEKDAYS = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
 // URL Web App của Google Apps Script (sẽ tạo ở bước 3.3)
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzKnjrfYG4_7ebjqgyONOWtfDF35IWW3We9s2_h89I0nRQqqk_YuxmW1Q1aIlq3DM1p/exec'; // thay bằng URL Web App thật
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzvW_JP7YvctW3boq1xUP7RlaOJt2AKN-dhGE7si6U21TtM7i9Wriwxbjy95tNA1rxg/exec'; // thay bằng URL Web App thật
 
 // Lưu sự kiện cá nhân đã tải về: { 'YYYY-MM-DD': [ {id, date, title, description} ] }
 let personalEvents = {};
@@ -114,6 +114,38 @@ function toggleEventForm() {
     // Khi mở form thì cuộn xuống khu vực sự kiện (hữu ích trên mobile)
     if (!form.classList.contains('hidden') && section) {
         section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+// Xóa tất cả sự kiện của ngày đang chọn (chỉ trên giao diện; cần thêm API backend nếu muốn đồng bộ)
+async function deleteSelectedEvents() {
+    const key = formatDateKey(selectedDate);
+    const statusEl = document.getElementById('event-status');
+    const events = personalEvents[key] || [];
+
+    if (!events.length) {
+        if (statusEl) statusEl.textContent = 'Không có sự kiện nào để xóa cho ngày này.';
+        return;
+    }
+
+    const confirmMsg = `Xóa ${events.length} sự kiện của ngày ${formatDateVi(selectedDate)}?`;
+    if (!confirm(confirmMsg)) return;
+
+    if (statusEl) statusEl.textContent = 'Đang xóa sự kiện...';
+
+    try {
+        await deletePersonalEvents(key);
+        delete personalEvents[key];
+        renderDayEvents();
+        renderMonthCalendar();
+        if (statusEl) {
+            statusEl.textContent = 'Đã xóa sự kiện cho ngày này.';
+        }
+    } catch (err) {
+        console.error(err);
+        if (statusEl) {
+            statusEl.textContent = 'Xóa thất bại trên server. Kiểm tra Apps Script.';
+        }
     }
 }
 // Chuyển date từ server thành key YYYY-MM-DD theo giờ địa phương
@@ -226,6 +258,49 @@ async function addPersonalEvent(eventData) {
 
     if (!data.success) {
         throw new Error(data.message || 'Lỗi khi lưu sự kiện trên Apps Script');
+    }
+    return data;
+}
+
+// Gửi yêu cầu xóa sự kiện của một ngày lên Apps Script
+async function deletePersonalEvents(dateStr) {
+    if (!APPS_SCRIPT_URL) {
+        throw new Error('APPS_SCRIPT_URL chưa được cấu hình trong main.js');
+    }
+
+    const body = new URLSearchParams();
+    body.append('action', 'delete');
+    body.append('date', dateStr);
+
+    let res;
+    try {
+        res = await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            body
+        });
+    } catch (networkErr) {
+        console.error('Lỗi khi gọi fetch tới Apps Script:', networkErr);
+        throw new Error('Không thể kết nối tới Apps Script (lỗi mạng hoặc CORS).');
+    }
+
+    const text = await res.text();
+    console.log('Apps Script delete status:', res.status);
+    console.log('Apps Script delete raw response:', text);
+
+    if (!res.ok) {
+        throw new Error('Apps Script trả về HTTP ' + res.status);
+    }
+
+    let data;
+    try {
+        data = JSON.parse(text);
+    } catch (jsonErr) {
+        console.error('Lỗi parse JSON:', jsonErr);
+        throw new Error('Phản hồi từ Apps Script không phải JSON hợp lệ.');
+    }
+
+    if (!data.success) {
+        throw new Error(data.message || 'Lỗi khi xóa sự kiện trên Apps Script');
     }
     return data;
 }
