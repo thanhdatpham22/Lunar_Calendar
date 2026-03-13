@@ -40,7 +40,7 @@ const LUNAR_HOLIDAYS = {
 // Các ngày trong tuần
 const WEEKDAYS = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
 // URL Web App của Google Apps Script (sẽ tạo ở bước 3.3)
-const APPS_SCRIPT_URL = ''; // thay bằng URL Web App thật
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwh7jWnYbJdBMb78TFbyeYRbdTYzTNCyrXoVjScG1S8bLgGC1bsu2cab96nT3JQYanL/exec'; // thay bằng URL Web App thật
 
 // Lưu sự kiện cá nhân đã tải về: { 'YYYY-MM-DD': [ {id, date, title, description} ] }
 let personalEvents = {};
@@ -294,6 +294,9 @@ function init() {
     // Thiết lập form & tải sự kiện cá nhân
     setupEventForm();
     loadPersonalEvents();
+
+    // Hiệu ứng icon rơi theo mùa
+    startSeasonalFall();
     
     // Debug: In ra kết quả để kiểm tra
     console.log('=== KIỂM TRA THUẬT TOÁN ÂM LỊCH ===');
@@ -412,24 +415,24 @@ function renderMonthCalendar() {
         let lunarTextClass = isCurrentMonth ? 'text-gray-500' : 'text-gray-400';
 
         if (isToday && isCurrentMonth) {
-            bgClass = 'bg-emerald-500 text-white';
+            bgClass = 'bg-sky-300 text-white';
             textClass = 'text-white';
-            lunarTextClass = 'text-emerald-100';
+            lunarTextClass = 'text-sky-100';
         } else if (isSunday && isCurrentMonth) {
-            textClass = 'text-red-500';
+            textClass = 'text-red-600';
         } else if (isSaturday && isCurrentMonth) {
-            textClass = 'text-blue-500';
+            textClass = 'text-sky-500';
         }
 
         if (isSelected && isCurrentMonth && !isToday) {
-            borderClass = 'border-2 border-emerald-500';
-            bgClass = 'bg-emerald-50';
+            borderClass = 'border-2 border-sky-400';
+            bgClass = 'bg-sky-100';
         }
 
         let lunarDisplay = lunar.day;
         if (lunar.day === 1 || lunar.day === 15) {
             lunarDisplay = `${lunar.day}/${lunar.month}`;
-            lunarTextClass = (isCurrentMonth ? 'text-red-500' : 'text-red-400') + ' font-bold';
+            lunarTextClass = (isCurrentMonth ? 'text-red-700' : 'text-red-500') + ' font-bold';
         }
 
         // Các chip sự kiện / ngày lễ
@@ -529,9 +532,9 @@ function renderHolidayList() {
         const [d, m] = date.split('/');
         container.innerHTML += `
             <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                <div class="w-12 h-12 bg-emerald-100 rounded-lg flex flex-col items-center justify-center flex-shrink-0">
-                    <span class="text-[10px] text-emerald-600 leading-none">T${m}</span>
-                    <span class="text-xl font-bold text-emerald-700 leading-none mt-0.5">${d}</span>
+                <div class="w-12 h-12 bg-sky-100 rounded-2xl flex flex-col items-center justify-center flex-shrink-0">
+                    <span class="text-[10px] text-sky-600 leading-none">T${m}</span>
+                    <span class="text-xl font-bold text-sky-700 leading-none mt-0.5">${d}</span>
                 </div>
                 <div class="flex-1 min-w-0">
                     <div class="font-medium text-gray-700 truncate">${name}</div>
@@ -563,6 +566,80 @@ function renderHolidayList() {
             `;
         }
     }
+}
+
+/**
+ * ========== SEASONAL FALLING ICONS ==========
+ */
+function startSeasonalFall() {
+    const containerId = 'falling-container';
+    let container = document.getElementById(containerId);
+    if (!container) {
+        container = document.createElement('div');
+        container.id = containerId;
+        container.className = 'falling-container';
+        document.body.appendChild(container);
+    }
+
+    const month = new Date().getMonth() + 1; // 1-12
+    const season = getSeasonForMonth(month);
+    const iconSet = getIconSetForSeason(season);
+    const maxIcons = 50;
+
+    // helper: tạo một icon rơi
+    const spawnIcon = () => {
+        if (!iconSet.length) return;
+        if (container.childElementCount > maxIcons) {
+            container.removeChild(container.firstChild);
+        }
+
+        const el = document.createElement('span');
+        el.className = 'falling-icon';
+        el.textContent = iconSet[Math.floor(Math.random() * iconSet.length)];
+
+        const startX = Math.random() * 100; // vw
+        const duration = 8 + Math.random() * 6; // 8-14s
+        const delay = Math.random() * 3; // 0-3s
+        const size = 14 + Math.random() * 12; // px
+        const drift = (Math.random() * 30 - 15).toFixed(1); // -15..15 deg
+
+        el.style.left = `${startX}vw`;
+        el.style.fontSize = `${size}px`;
+        el.style.animationDuration = `${duration}s`;
+        el.style.animationDelay = `${delay}s`;
+        el.style.transform = `rotate(${drift}deg)`;
+
+        container.appendChild(el);
+
+        // cleanup sau khi rơi xong
+        setTimeout(() => {
+            if (el.parentNode) el.parentNode.removeChild(el);
+        }, (duration + delay) * 1000);
+    };
+
+    // sinh đều đặn
+    spawnIcon();
+    setInterval(spawnIcon, 300);
+}
+
+function getSeasonForMonth(month) {
+    // Dễ chỉnh: cập nhật mốc tháng cho 4 mùa Việt Nam
+    // Xuân: 1-3 (Tết), Hạ: 4-6, Thu: 7-9, Đông: 10-12
+    if (month >= 1 && month <= 3) return 'spring';
+    if (month >= 4 && month <= 6) return 'summer';
+    if (month >= 7 && month <= 9) return 'autumn';
+    return 'winter';
+}
+
+function getIconSetForSeason(season) {
+    // Có thể thay emoji tại đây
+    const map = {
+        spring: ['🌸', '🌼', '🌺', '💮'], // hoa đào/mai tượng trưng
+        summer: ['🍃', '🌿', '☘️'],
+        autumn: ['🍂', '🍁', '🍂'],
+        winter: ['❄️', '❅', '❆']
+    };
+    return map[season] || [];
 }
 
 /**

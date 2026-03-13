@@ -1,35 +1,156 @@
-/* ===== CUSTOM STYLES ===== */
+/* ===== GLOBAL ===== */
 * {
     font-family: 'Be Vietnam Pro', sans-serif;
 }
 
-/* Scrollbar styling */
+body {
+    background: radial-gradient(circle at 20% 20%, rgba(125, 211, 252, 0.22), transparent 40%),
+        radial-gradient(circle at 80% 0%, rgba(255, 223, 122, 0.22), transparent 38%),
+        #f3f7ff;
+}
+
+/* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar {
     width: 8px;
 }
-
 ::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: #e0f2fe;
 }
-
 ::-webkit-scrollbar-thumb {
-    background: #10b981;
+    background: #38bdf8;
     border-radius: 4px;
 }
 
-/* Calendar day hover effect */
+/* ===== THEME COLORS (SKY & LAVENDER YELLOW) ===== */
+:root {
+    --primary: #1d9bf0;  /* sky blue */
+    --accent: #ffd54f;   /* soft yellow */
+    --soft-bg: #e0f2fe;  /* light sky */
+    --soft-hover: #fff1c2; /* light yellow */
+    --text-main: #374151;
+    --text-sub: #6b7280;
+    --border: #e5e7eb;
+    --header-gradient: linear-gradient(
+        135deg,
+        #38bdf8 0%,
+        #60a5fa 45%,
+        #ffd54f 100%
+    );
+}
+
+/* ===== HEADER ===== */
+.bg-gradient-dat {
+    background: linear-gradient(135deg, #38bdf8, #ffd54f) !important; /* xanh da trời -> vàng lavender */
+    box-shadow: 0 6px 20px rgba(56, 189, 248, 0.28);
+    border-radius: 16px; /* vát tròn các góc */
+    padding: 10px 20px; /* để header nhìn đẹp hơn */
+}
+
+/* ===== BUTTONS ===== */
+.nav-btn {
+    transition: all 0.2s ease;
+}
+.nav-btn:hover {
+    transform: scale(1.1);
+}
+
+.today-btn {
+    background-color: var(--soft-bg);
+    color: var(--primary);
+    transition: all 0.3s ease;
+}
+.today-btn:hover {
+    background-color: var(--primary);
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(56, 189, 248, 0.35);
+}
+
+/* ===== CALENDAR DAYS ===== */
 .calendar-day {
     transition: all 0.2s ease;
 }
-
 .calendar-day:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px rgba(56, 189, 248, 0.18);
 }
 
-/* Badge animation */
+/* Today */
+.calendar-day.today {
+    background-color: var(--primary);
+    color: white;
+    border-radius: 12px;
+    box-shadow: 0 0 0 3px var(--soft-hover);
+}
+
+/* Sunday */
+.calendar-day.sunday {
+    background-color: var(--soft-bg);
+}
+
+/* Holiday */
+.calendar-day.holiday {
+    background-color: var(--accent);
+    color: white;
+}
+
+/* Personal Event */
+.calendar-day.event {
+    background-color: var(--soft-bg);
+    border: 1px solid var(--accent);
+    color: #991b1b;
+}
+
+/* ===== SOLAR DAY NUMBER ===== */
+#solar-day {
+    color: var(--primary);
+}
+
+/* ===== LUNAR / CAN CHI BLOCK ===== */
+.bg-amber-50 {
+    background-color: var(--soft-bg) !important;
+}
+.text-amber-700 {
+    color: #991b1b !important;
+}
+.border-amber-200 {
+    border-color: var(--soft-hover) !important;
+}
+
+/* ===== HOLIDAY BADGE ===== */
 .holiday-badge {
+    background-color: var(--accent);
     animation: pulse 2s infinite;
+}
+
+/* ===== SOFT CARD SURFACES ===== */
+.soft-card {
+    border-radius: 24px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(249, 247, 255, 0.96));
+    box-shadow: 0 14px 40px rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.06);
+}
+
+/* ===== SEASONAL FALLING ICONS ===== */
+.falling-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 50;
+}
+.falling-icon {
+    position: absolute;
+    top: -8%;
+    font-size: 16px;
+    opacity: 0.95;
+    animation-name: fall-icon;
+    animation-timing-function: linear;
+}
+@keyframes fall-icon {
+    to {
+        transform: translateY(110vh) rotate(360deg);
+        opacity: 0.2;
+    }
 }
 
 @keyframes pulse {
@@ -37,25 +158,7 @@
     50% { opacity: 0.8; }
 }
 
-/* Button hover */
-.nav-btn {
-    transition: all 0.2s ease;
-}
-
-.nav-btn:hover {
-    transform: scale(1.1);
-}
-
-/* Today button */
-.today-btn {
-    transition: all 0.3s ease;
-}
-
-.today-btn:hover {
-    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
-}
-
-/* Select styling */
+/* ===== SELECT ===== */
 select {
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
