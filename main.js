@@ -40,7 +40,7 @@ const LUNAR_HOLIDAYS = {
 // Các ngày trong tuần
 const WEEKDAYS = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
 // URL Web App của Google Apps Script (sẽ tạo ở bước 3.3)
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwh7jWnYbJdBMb78TFbyeYRbdTYzTNCyrXoVjScG1S8bLgGC1bsu2cab96nT3JQYanL/exec'; // thay bằng URL Web App thật
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzKnjrfYG4_7ebjqgyONOWtfDF35IWW3We9s2_h89I0nRQqqk_YuxmW1Q1aIlq3DM1p/exec'; // thay bằng URL Web App thật
 
 // Lưu sự kiện cá nhân đã tải về: { 'YYYY-MM-DD': [ {id, date, title, description} ] }
 let personalEvents = {};
@@ -193,7 +193,7 @@ async function addPersonalEvent(eventData) {
         throw new Error('APPS_SCRIPT_URL chưa được cấu hình trong main.js');
     }
 
-    // Gửi dưới dạng form-urlencoded, param "data" chứa JSON
+    // Gửi dạng form-urlencoded để tránh preflight CORS
     const body = new URLSearchParams();
     body.append('data', JSON.stringify(eventData));
 
@@ -201,7 +201,7 @@ async function addPersonalEvent(eventData) {
     try {
         res = await fetch(APPS_SCRIPT_URL, {
             method: 'POST',
-            body // KHÔNG cần set headers Content-Type, trình duyệt tự dùng application/x-www-form-urlencoded
+            body // browser tự đặt Content-Type: application/x-www-form-urlencoded
         });
     } catch (networkErr) {
         console.error('Lỗi khi gọi fetch tới Apps Script:', networkErr);
@@ -419,6 +419,7 @@ function renderMonthCalendar() {
             textClass = 'text-white';
             lunarTextClass = 'text-sky-100';
         } else if (isSunday && isCurrentMonth) {
+            bgClass = 'bg-yellow-200 text-white';
             textClass = 'text-red-600';
         } else if (isSaturday && isCurrentMonth) {
             textClass = 'text-sky-500';
