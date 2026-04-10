@@ -1,5 +1,5 @@
 self.addEventListener("install", (event) => {
-  console.log("Service Worker installed");
+  console.log("SW installed");
 });
 
 self.addEventListener("fetch", (event) => {
