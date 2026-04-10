@@ -32,15 +32,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./service-worker.js", {
+    scope: "./"
+  });
+}
+</script>
 <body class="min-h-screen">
-    <script>
-    if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("./service-worker.js")
-        .then(() => console.log("SW registered"))
-        .catch((err) => console.log(err));
-    }
-    </script>
+
     <!-- Header -->
     <header class="bg-gradient-dat text-white py-4 shadow-lg">
         <div class="container mx-auto px-4">
